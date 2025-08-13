@@ -1,0 +1,24 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: filename, datatype: string}
+# - {name: instrument, datatype: string}
+# - {name: detector, datatype: int64}
+# schema: astropy-2.0
+filename instrument detector
+./tmp/tmp_confidence.fit VIRCAM 1
+./tmp/tmp_confidence.fit VIRCAM 2
+./tmp/tmp_confidence.fit VIRCAM 3
+./tmp/tmp_confidence.fit VIRCAM 4
+./tmp/tmp_confidence.fit VIRCAM 5
+./tmp/tmp_confidence.fit VIRCAM 6
+./tmp/tmp_confidence.fit VIRCAM 7
+./tmp/tmp_confidence.fit VIRCAM 8
+./tmp/tmp_confidence.fit VIRCAM 9
+./tmp/tmp_confidence.fit VIRCAM 10
+./tmp/tmp_confidence.fit VIRCAM 11
+./tmp/tmp_confidence.fit VIRCAM 12
+./tmp/tmp_confidence.fit VIRCAM 13
+./tmp/tmp_confidence.fit VIRCAM 14
+./tmp/tmp_confidence.fit VIRCAM 15
+./tmp/tmp_confidence.fit VIRCAM 16

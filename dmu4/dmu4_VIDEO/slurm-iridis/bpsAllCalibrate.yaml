@@ -1,0 +1,25 @@
+# Source Calibration
+
+pipelineYaml: "${OBS_VISTA_DIR}/pipelines/DRP.yaml#step2"
+
+wmsServiceClass: lsst.ctrl.bps.parsl.ParslService
+
+project: dev
+campaign: quick
+computeSite: work_queue
+
+parsl:
+  log_level: INFO
+
+site:
+  work_queue:
+    class: lsst.ctrl.bps.parsl.sites.work_queue.LocalSrunWorkQueue
+    worker_options: "--memory=745000"   # work_queue expects memory in MB
+    nodes_per_block: 1
+
+
+payload:
+  payloadName: DRP/videoCalibrate
+  butlerConfig: /home/ejp1v21/data/lsst/ejp1v21/lsst-ir-fusion/dmu4/dmu4_VIDEO/data/butler.yaml
+  inCollection: skymaps,u/ejp1v21/DRP/videoSingleFrame
+  dataQuery: "band in ('Z','Y','J','H','K') AND skymap='hscPdr2'"

@@ -1,0 +1,29 @@
+# SingleFrame processing:
+
+pipelineYaml: "${OBS_VISTA_DIR}/pipelines/DRP.yaml#step1"
+
+wmsServiceClass: lsst.ctrl.bps.parsl.ParslService
+
+project: dev
+campaign: quick
+computeSite: work_queue
+
+parsl:
+  log_level: DEBUG
+
+site:
+  local:
+    class: lsst.ctrl.bps.parsl.sites.Local
+    cores: 32
+  work_queue:
+    class: lsst.ctrl.bps.parsl.sites.work_queue.LocalSrunWorkQueue
+    worker_options: "--memory=640000"   # work_queue expects memory in MB
+    nodes_per_block: 2
+
+
+payload:
+  payloadName: DRP/videoSingleFrame
+  butlerConfig: /home/ejp1v21/data/lsst/ejp1v21/lsst-ir-fusion/dmu4/dmu4_VIDEO/data/butler.yaml
+  inCollection: confidence/video,VIRCAM/raw/video,refcats/video,VIRCAM/calib/video,skymaps
+  # dataQuery: "band in ('Z','Y','J','H','K')"
+  dataQuery: "band in ('K')"

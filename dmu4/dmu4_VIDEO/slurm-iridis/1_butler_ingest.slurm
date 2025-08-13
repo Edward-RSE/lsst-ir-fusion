@@ -22,8 +22,6 @@ mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).
 #! Optionally modify the environment seen by the application
 #! (note that SLURM reproduces the environment at submission irrespective of ~/.bashrc):
 . /etc/profile.d/modules.sh                # Leave this line (enables the module command)
-module purge                               # Removes all modules still loaded
-module load conda
 
 #! Setup LSST Science pipeline environment
 source setup.sh
@@ -77,8 +75,5 @@ fi
 echo -e "\nnumtasks=$numtasks, numnodes=$numnodes, mpi_tasks_per_node=$mpi_tasks_per_node (OMP_NUM_THREADS=$OMP_NUM_THREADS)"
 
 echo -e "\nExecuting command:\n==================\n$CMD\n"
-
-bash "$SLURM_SUBMIT_DIR/track_memory.sh"
-bash "$SLURM_SUBMIT_DIR/track_procs.sh"
 
 eval $CMD

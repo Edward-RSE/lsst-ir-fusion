@@ -37,19 +37,19 @@ echo "--------------------------------------------------------------------------
 
 # pull then run postgresql via apptainer
 
-# apptainer pull postgres.sif docker://postgres:latest
-docker pull postgres:latest
+apptainer pull postgres.sif docker://postgres:latest
+# docker pull postgres:latest
 
-#apptainer run --unsquash -B $POSTGRES_HOME/db:/var/lib/postgresql -B $POSTGRES_HOME/run:/var/run/postgresql postgres.sif -c "port=$POSTGRES_PORT"
-docker run \
-    -p $POSTGRES_PORT:5432 \
-    --name vcrubin-postgresql \
-    -e PGDATA=$PGDATA \
-    -e POSTGRES_INITDB_ARGS=$POSTGRES_INITDB_ARGS \
-    -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-    -e POSTGRES_DB=$POSTGRES_DB \
-    -e POSTGRES_USER=$POSTGRES_USER \
-    -d postgres
+apptainer run --unsquash postgres.sif -c
+# docker run \
+#    -p $POSTGRES_PORT:5432 \
+#    --name vcrubin-postgresql \
+#    -e PGDATA=$PGDATA \
+#    -e POSTGRES_INITDB_ARGS=$POSTGRES_INITDB_ARGS \
+#    -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+#    -e POSTGRES_DB=$POSTGRES_DB \
+#    -e POSTGRES_USER=$POSTGRES_USER \
+#    -d postgres
 
 # make sure pgres is up and healthy before performing queries
 sleep 2

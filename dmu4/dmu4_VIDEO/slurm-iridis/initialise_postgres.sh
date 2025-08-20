@@ -37,6 +37,7 @@ echo "--------------------------------------------------------------------------
 
 # pull then run postgresql via apptainer
 
+module load apptainer
 apptainer pull postgres.sif docker://postgres:latest
 # docker pull postgres:latest
 

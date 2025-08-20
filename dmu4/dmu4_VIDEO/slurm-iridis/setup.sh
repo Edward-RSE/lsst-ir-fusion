@@ -5,7 +5,7 @@
 # The weekly tag should be revised based on the installed stack
 # version.
 #export weekly='w.2025.14'
-export release='v29.0.1'
+export release='v29.1.1'
 
 echo -e "release $release"
 

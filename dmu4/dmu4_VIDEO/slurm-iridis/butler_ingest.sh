@@ -4,6 +4,7 @@
 # "setup.sh" file should be revised based on the installed stack
 # version.
 source setup.sh
+source initialise_postgres.sh
 
 # Set location of Butler
 export repo=../data
@@ -13,8 +14,15 @@ if [ -f $repo/butler.yaml ]; then
     rm -r $repo
 fi
 
+mkdir -p $repo
+
+# Create butler seed
+echo """registry:
+    db: \"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\"
+    namespace: \"$SCHEMA_NAMESPACE\"""" > $repo/butler-seed.yaml
+
 # Create the Butler
-butler create $repo
+butler create --seed-config $repo/butler-seed.yaml --override $repo
 
 # Register VIRCAM
 butler register-instrument $repo lsstuk.obs.vista.VIRCAM

@@ -1,5 +1,4 @@
-# export POSTGRES_HOME=/iridisfs/scratch/$(whoami)
-export POSTGRES_HOME=/home/jamie/Experimentation/vcrpostgres
+export POSTGRES_HOME=/iridisfs/scratch/$(whoami)
 
 # Name of the database
 export POSTGRES_DB=vcrubin-postgresql
@@ -7,16 +6,16 @@ export POSTGRES_DB=vcrubin-postgresql
 # Create the necessary folder structure and generate random password if not already created
 mkdir -p $POSTGRES_HOME/{config,db/data,run}
 export POSTGRES_PASSWORD=$(uuidgen)
-echo $POSTGRES_PASSWORD > $POSTGRES_HOME/config/postgres-password
-chmod 777 $POSTGRES_HOME/config/postgres-password
+#echo $POSTGRES_PASSWORD > $POSTGRES_HOME/config/postgres-password
 
 # Configure necessary PostgreSQL variables
-export POSTGRES_PASSWORD_FILE=$POSTGRES_HOME/config/postgres-password
+#export POSTGRES_PASSWORD_FILE=$POSTGRES_HOME/config/postgres-password
 export POSTGRES_USER=$USER
 export PGDATA=$POSTGRES_HOME/db/data
 export POSTGRES_HOST_AUTH_METHOD=md5
 export POSTGRES_INITDB_ARGS="--data-checksums"
-export POSTGRES_PORT=$(shuf -i 10000-30000 -n 1) # select a random port to run on
+#export POSTGRES_PORT=$(shuf -i 10000-30000 -n 1) # select a random port to run on
+export POSTGRES_PORT=5432
 export POSTGRES_HOST=$(hostname)
 
 echo ""
@@ -38,7 +37,7 @@ echo "--------------------------------------------------------------------------
 # pull then run postgresql via apptainer
 
 module load apptainer
-apptainer pull postgres.sif docker://postgres:latest
+apptainer pull --force postgres.sif docker://postgres:latest
 # docker pull postgres:latest
 
 apptainer run --unsquash postgres.sif -c
@@ -57,6 +56,9 @@ sleep 2
 
 # export butler parameters related to db architecture
 export SCHEMA_NAMESPACE="vcr_butler_repo"
+
+# create environment for running basic psql queries via python script
+conda install conda-forge::postgresql
 
 # initialise relevant infrastructure
 PGPASSWORD=$POSTGRES_PASSWORD psql --host=$POSTGRES_HOST --port=$POSTGRES_PORT -d $POSTGRES_DB -c "CREATE EXTENSION IF NOT EXISTS btree_gist;"

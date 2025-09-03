@@ -1,66 +1,69 @@
-export POSTGRES_HOME=/iridisfs/scratch/$(whoami)
+# Run this script on the host machine for the postgres instance.
+# Save the password (to modify the butler_ingest.sh script as
+# necessary) and run the following in a screen session from the
+# postgres host:
+
+# ssh -R 55432:localhost:5432 [username]@iridis6_b.soton.ac.uk
+
+export POSTGRES_HOME=/srv/docker/postgres
 
 # Name of the database
 export POSTGRES_DB=vcrubin-postgresql
 
-# Create the necessary folder structure and generate random password if not already created
+# Create the necessary folder structure and generate random password if not already create
+d
 mkdir -p $POSTGRES_HOME/{config,db/data,run}
 export POSTGRES_PASSWORD=$(uuidgen)
-#echo $POSTGRES_PASSWORD > $POSTGRES_HOME/config/postgres-password
+echo $POSTGRES_PASSWORD > $POSTGRES_HOME/config/postgres-password
+chmod 777 $POSTGRES_HOME/config/postgres-password
 
 # Configure necessary PostgreSQL variables
-#export POSTGRES_PASSWORD_FILE=$POSTGRES_HOME/config/postgres-password
-export POSTGRES_USER=$USER
+export POSTGRES_PASSWORD_FILE=$POSTGRES_HOME/config/postgres-password
+export POSTGRES_USER=vcrubin
 export PGDATA=$POSTGRES_HOME/db/data
 export POSTGRES_HOST_AUTH_METHOD=md5
 export POSTGRES_INITDB_ARGS="--data-checksums"
-#export POSTGRES_PORT=$(shuf -i 10000-30000 -n 1) # select a random port to run on
 export POSTGRES_PORT=5432
-export POSTGRES_HOST=$(hostname)
+export POSTGRES_HOST=localhost
 
 echo ""
-echo "----------------------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------------------
+----"
 echo ""
 echo "  PostgreSQL Server Connection Details:"
 echo ""
 echo "      Server: $POSTGRES_HOST"
 echo "        Port: $POSTGRES_PORT"
 echo "    Database: $POSTGRES_DB"
-echo "    Username: $USER"
+echo "    Password: $POSTGRES_PASSWORD"
+echo "    Username: $POSTGRES_USER"
 echo "    Password: Located in $POSTGRES_HOME/config/postgres-password"
 echo ""
-echo "---------------------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------------------
+---"
 
-# load apptainer
-# module load apptainer
+docker pull postgres:latest
 
-# pull then run postgresql via apptainer
+docker run \
+    -p $POSTGRES_PORT:5432 \
+    --name vcrubin-postgresql \
+    -e PGDATA=$PGDATA \
+    -e POSTGRES_INITDB_ARGS=$POSTGRES_INITDB_ARGS \
+    -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+    -e POSTGRES_DB=$POSTGRES_DB \
+    -e POSTGRES_USER=$POSTGRES_USER \
+    -d postgres
 
-module load apptainer
-apptainer pull --force postgres.sif docker://postgres:latest
-# docker pull postgres:latest
-
-apptainer run --unsquash postgres.sif -c
-# docker run \
-#    -p $POSTGRES_PORT:5432 \
-#    --name vcrubin-postgresql \
-#    -e PGDATA=$PGDATA \
-#    -e POSTGRES_INITDB_ARGS=$POSTGRES_INITDB_ARGS \
-#    -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-#    -e POSTGRES_DB=$POSTGRES_DB \
-#    -e POSTGRES_USER=$POSTGRES_USER \
-#    -d postgres
-
-# make sure pgres is up and healthy before performing queries
-sleep 2
+sleep 10
 
 # export butler parameters related to db architecture
 export SCHEMA_NAMESPACE="vcr_butler_repo"
 
-# create environment for running basic psql queries via python script
-conda install conda-forge::postgresql
+echo $POSTGRES_PASSWORD
 
 # initialise relevant infrastructure
-PGPASSWORD=$POSTGRES_PASSWORD psql --host=$POSTGRES_HOST --port=$POSTGRES_PORT -d $POSTGRES_DB -c "CREATE EXTENSION IF NOT EXISTS btree_gist;"
-PGPASSWORD=$POSTGRES_PASSWORD psql --host=$POSTGRES_HOST --port=$POSTGRES_PORT -d $POSTGRES_DB -c "CREATE SCHEMA $SCHEMA_NAMESPACE;"
+PGPASSWORD=$POSTGRES_PASSWORD psql --username=$POSTGRES_USER --host=$POSTGRES_HOST --port=
+$POSTGRES_PORT -d $POSTGRES_DB -c "CREATE EXTENSION IF NOT EXISTS btree_gist;"
+PGPASSWORD=$POSTGRES_PASSWORD psql --username=$POSTGRES_USER --host=$POSTGRES_HOST --port=
+$POSTGRES_PORT -d $POSTGRES_DB -c "CREATE SCHEMA $SCHEMA_NAMESPACE;"
 
